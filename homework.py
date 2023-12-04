@@ -1,17 +1,15 @@
-class InfoMessage():
+from dataclasses import dataclass
+
+
+@dataclass
+class InfoMessage:
     """Информационное сообщение о тренировке."""
 
-    def __init__(self,
-                 training_type,
-                 duration,
-                 distance,
-                 speed,
-                 calories) -> None:
-        self.training_type = training_type
-        self.duration = duration
-        self.distance = distance
-        self.speed = speed
-        self.calories = calories
+    training_type: str
+    duration: float
+    distance: float
+    speed: float
+    calories: float
 
     def get_message(self):
         return (f'Тип тренировки: {self.training_type}; '
@@ -142,13 +140,19 @@ class Swimming(Training):
         return calories
 
 
-def read_package(workout_type: str, data: list) -> Training:
+def read_package(workout_type: str, data: list[int]) -> Training:
     """Прочитать данные полученные от датчиков."""
 
-    workout_types = {'SWM': Swimming,
-                     'RUN': Running,
-                     'WLK': SportsWalking}
-    return workout_types[workout_type](*data)
+    workout_types: dict[str, type[Training]] = {
+        'SWM': Swimming,
+        'RUN': Running,
+        'WLK': SportsWalking}
+
+    if workout_type in workout_types:
+        return workout_types[workout_type](*data)
+    else:
+        raise ValueError(f'Некорректное значение одного из аргументов: '
+                         f'{workout_type}')
 
 
 def main(training: Training) -> None:
